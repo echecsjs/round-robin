@@ -35,14 +35,14 @@ const players: Player[] = [
 // Get pairings for round 1 (no previous games)
 const round1 = pair(players, []);
 console.log(round1.pairings);
-// [{ whiteId: 'alice', blackId: 'dave' }, { whiteId: 'bob', blackId: 'carol' }]
+// [{ white: 'alice', black: 'dave' }, { white: 'bob', black: 'carol' }]
 
 // After recording round-1 results, pair round 2
 // games[n] = round n+1; Game has no `round` field
 const games = [
   [
-    { whiteId: 'alice', blackId: 'dave', result: 1 },
-    { whiteId: 'bob', blackId: 'carol', result: 0.5 },
+    { white: 'alice', black: 'dave', result: 1 },
+    { white: 'bob', black: 'carol', result: 0.5 },
   ],
 ];
 const round2 = pair(players, games); // next round = games.length + 1 = 2
@@ -78,12 +78,12 @@ interface PairingResult {
 }
 
 interface Pairing {
-  blackId: string;
-  whiteId: string;
+  black: string;
+  white: string;
 }
 
 interface Bye {
-  playerId: string;
+  player: string;
 }
 ```
 
@@ -125,9 +125,9 @@ const players: Player[] = [{ id: 'alice' }, { id: 'bob' }, { id: 'carol' }];
 
 const round1 = pair(players, []);
 console.log(round1.byes);
-// [{ playerId: 'alice' }]
+// [{ player: 'alice' }]
 console.log(round1.pairings);
-// [{ whiteId: 'bob', blackId: 'carol' }]
+// [{ white: 'bob', black: 'carol' }]
 ```
 
 ## Unified Pairing Interface
@@ -163,9 +163,9 @@ interface Player {
 }
 
 interface Game {
-  blackId: string;
+  black: string;
   result: Result;
-  whiteId: string;
+  white: string;
   // No `round` field — round is encoded by position in Game[][]
 }
 

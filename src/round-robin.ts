@@ -54,15 +54,15 @@ function pair(players: Player[], _games: Game[][]): PairingResult {
       const playerIndex = whiteIndex === byeIndex ? blackIndex : whiteIndex;
       const player = players[playerIndex];
       if (player !== undefined) {
-        byes.push({ playerId: player.id });
+        byes.push({ player: player.id });
       }
     } else {
       const white = players[whiteIndex];
       const black = players[blackIndex];
       if (white !== undefined && black !== undefined) {
         pairings.push({
-          blackId: black.id,
-          whiteId: white.id,
+          black: black.id,
+          white: white.id,
         });
       }
     }

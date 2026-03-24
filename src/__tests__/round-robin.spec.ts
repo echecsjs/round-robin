@@ -31,9 +31,9 @@ function checkCompleteness(n: number): void {
   }
 
   for (const { pairings } of rounds) {
-    for (const { blackId, whiteId } of pairings) {
-      encounters.get(whiteId)?.add(blackId);
-      encounters.get(blackId)?.add(whiteId);
+    for (const { black, white } of pairings) {
+      encounters.get(white)?.add(black);
+      encounters.get(black)?.add(white);
     }
   }
 
@@ -55,16 +55,16 @@ function checkCoverage(n: number): void {
   for (const { byes, pairings } of rounds) {
     const seen = new Set<string>();
 
-    for (const { blackId, whiteId } of pairings) {
-      expect(seen.has(whiteId)).toBe(false);
-      expect(seen.has(blackId)).toBe(false);
-      seen.add(whiteId);
-      seen.add(blackId);
+    for (const { black, white } of pairings) {
+      expect(seen.has(white)).toBe(false);
+      expect(seen.has(black)).toBe(false);
+      seen.add(white);
+      seen.add(black);
     }
 
-    for (const { playerId } of byes) {
-      expect(seen.has(playerId)).toBe(false);
-      seen.add(playerId);
+    for (const { player } of byes) {
+      expect(seen.has(player)).toBe(false);
+      seen.add(player);
     }
 
     expect(seen).toEqual(playerIds);
@@ -79,8 +79,8 @@ describe('pair()', () => {
       expect(pair(p, [])).toEqual({
         byes: [],
         pairings: [
-          { whiteId: 'P1', blackId: 'P4' },
-          { whiteId: 'P2', blackId: 'P3' },
+          { white: 'P1', black: 'P4' },
+          { white: 'P2', black: 'P3' },
         ],
       });
     });
@@ -89,8 +89,8 @@ describe('pair()', () => {
       expect(pair(p, [[]])).toEqual({
         byes: [],
         pairings: [
-          { whiteId: 'P4', blackId: 'P3' },
-          { whiteId: 'P1', blackId: 'P2' },
+          { white: 'P4', black: 'P3' },
+          { white: 'P1', black: 'P2' },
         ],
       });
     });
@@ -99,8 +99,8 @@ describe('pair()', () => {
       expect(pair(p, [[], []])).toEqual({
         byes: [],
         pairings: [
-          { whiteId: 'P2', blackId: 'P4' },
-          { whiteId: 'P3', blackId: 'P1' },
+          { white: 'P2', black: 'P4' },
+          { white: 'P3', black: 'P1' },
         ],
       });
     });
@@ -113,10 +113,10 @@ describe('pair()', () => {
       expect(pair(p, [])).toEqual({
         byes: [],
         pairings: [
-          { whiteId: 'P1', blackId: 'P8' },
-          { whiteId: 'P2', blackId: 'P7' },
-          { whiteId: 'P3', blackId: 'P6' },
-          { whiteId: 'P4', blackId: 'P5' },
+          { white: 'P1', black: 'P8' },
+          { white: 'P2', black: 'P7' },
+          { white: 'P3', black: 'P6' },
+          { white: 'P4', black: 'P5' },
         ],
       });
     });
@@ -125,10 +125,10 @@ describe('pair()', () => {
       expect(pair(p, [[], [], [], [], [], []])).toEqual({
         byes: [],
         pairings: [
-          { whiteId: 'P4', blackId: 'P8' },
-          { whiteId: 'P5', blackId: 'P3' },
-          { whiteId: 'P6', blackId: 'P2' },
-          { whiteId: 'P7', blackId: 'P1' },
+          { white: 'P4', black: 'P8' },
+          { white: 'P5', black: 'P3' },
+          { white: 'P6', black: 'P2' },
+          { white: 'P7', black: 'P1' },
         ],
       });
     });
@@ -149,8 +149,8 @@ describe('pair()', () => {
     it('P1 gets bye in round 1 (seat 4 is bye seat)', () => {
       const result = pair(p, []);
       // Round 1 FIDE: 1-4, 2-3 → seat 4 is bye → P1 gets bye
-      expect(result.byes).toEqual([{ playerId: 'P1' }]);
-      expect(result.pairings).toEqual([{ whiteId: 'P2', blackId: 'P3' }]);
+      expect(result.byes).toEqual([{ player: 'P1' }]);
+      expect(result.pairings).toEqual([{ white: 'P2', black: 'P3' }]);
     });
   });
 
@@ -176,8 +176,8 @@ describe('pair()', () => {
   describe('interface compatibility', () => {
     it('accepts a games array and ignores contents', () => {
       const p = players(4);
-      const games: { blackId: string; result: 1; whiteId: string }[][] = [
-        [{ blackId: 'P4', result: 1, whiteId: 'P1' }],
+      const games: { black: string; result: 1; white: string }[][] = [
+        [{ black: 'P4', result: 1, white: 'P1' }],
       ];
       expect(() => pair(p, games)).not.toThrow();
     });
