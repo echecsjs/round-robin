@@ -1,11 +1,24 @@
 import { describe, expect, it } from 'vitest';
 
-import { roundRobin, schedule } from '../index.js';
+import { pair } from '../index.js';
 
-import type { Player } from '../index.js';
+import type { Game, Player } from '../index.js';
 
 function players(n: number): Player[] {
   return Array.from({ length: n }, (_, index) => ({ id: `P${index + 1}` }));
+}
+
+function schedule(p: Player[]) {
+  const size = p.length % 2 === 0 ? p.length : p.length + 1;
+  const rounds = size - 1;
+  const result = [];
+  const games: Game[][] = [];
+  for (let r = 0; r < rounds; r++) {
+    const roundResult = pair(p, games);
+    result.push(roundResult);
+    games.push([]);
+  }
+  return result;
 }
 
 function checkCompleteness(n: number): void {
@@ -58,12 +71,12 @@ function checkCoverage(n: number): void {
   }
 }
 
-describe('roundRobin()', () => {
+describe('pair()', () => {
   describe('FIDE Berger table — 4 players', () => {
     const p = players(4);
 
     it('round 1: 1-4, 2-3', () => {
-      expect(roundRobin(p, [], 1)).toEqual({
+      expect(pair(p, [])).toEqual({
         byes: [],
         pairings: [
           { whiteId: 'P1', blackId: 'P4' },
@@ -73,7 +86,7 @@ describe('roundRobin()', () => {
     });
 
     it('round 2: 4-3, 1-2', () => {
-      expect(roundRobin(p, [], 2)).toEqual({
+      expect(pair(p, [[]])).toEqual({
         byes: [],
         pairings: [
           { whiteId: 'P4', blackId: 'P3' },
@@ -83,7 +96,7 @@ describe('roundRobin()', () => {
     });
 
     it('round 3: 2-4, 3-1', () => {
-      expect(roundRobin(p, [], 3)).toEqual({
+      expect(pair(p, [[], []])).toEqual({
         byes: [],
         pairings: [
           { whiteId: 'P2', blackId: 'P4' },
@@ -97,7 +110,7 @@ describe('roundRobin()', () => {
     const p = players(8);
 
     it('round 1: 1-8, 2-7, 3-6, 4-5', () => {
-      expect(roundRobin(p, [], 1)).toEqual({
+      expect(pair(p, [])).toEqual({
         byes: [],
         pairings: [
           { whiteId: 'P1', blackId: 'P8' },
@@ -109,7 +122,7 @@ describe('roundRobin()', () => {
     });
 
     it('round 7: 4-8, 5-3, 6-2, 7-1', () => {
-      expect(roundRobin(p, [], 7)).toEqual({
+      expect(pair(p, [[], [], [], [], [], []])).toEqual({
         byes: [],
         pairings: [
           { whiteId: 'P4', blackId: 'P8' },
@@ -125,15 +138,16 @@ describe('roundRobin()', () => {
     const p = players(3);
 
     it('produces one bye per round', () => {
-      for (let r = 1; r <= 3; r++) {
-        const result = roundRobin(p, [], r);
+      for (let r = 0; r < 3; r++) {
+        const games: Game[][] = Array.from({ length: r }, () => []);
+        const result = pair(p, games);
         expect(result.byes).toHaveLength(1);
         expect(result.pairings).toHaveLength(1);
       }
     });
 
     it('P1 gets bye in round 1 (seat 4 is bye seat)', () => {
-      const result = roundRobin(p, [], 1);
+      const result = pair(p, []);
       // Round 1 FIDE: 1-4, 2-3 → seat 4 is bye → P1 gets bye
       expect(result.byes).toEqual([{ playerId: 'P1' }]);
       expect(result.pairings).toEqual([{ whiteId: 'P2', blackId: 'P3' }]);
@@ -142,52 +156,31 @@ describe('roundRobin()', () => {
 
   describe('validation', () => {
     it('throws RangeError for fewer than 3 players', () => {
-      expect(() => roundRobin(players(2), [], 1)).toThrow(RangeError);
+      expect(() => pair(players(2), [])).toThrow(RangeError);
     });
 
     it('throws RangeError for more than 16 players', () => {
-      expect(() => roundRobin(players(17), [], 1)).toThrow(RangeError);
+      expect(() => pair(players(17), [])).toThrow(RangeError);
     });
 
-    it('throws RangeError for round 0', () => {
-      expect(() => roundRobin(players(4), [], 0)).toThrow(RangeError);
+    it('throws RangeError when games.length implies round 0 is invalid', () => {
+      // 4 players → max 3 rounds; passing 3 prior rounds means round 4, which is invalid
+      expect(() => pair(players(4), [[], [], []])).toThrow(RangeError);
     });
 
-    it('throws RangeError for round beyond max (4 players → max 3)', () => {
-      expect(() => roundRobin(players(4), [], 4)).toThrow(RangeError);
-    });
-
-    it('throws RangeError for round beyond max (6 players → max 5)', () => {
-      expect(() => roundRobin(players(6), [], 6)).toThrow(RangeError);
+    it('throws RangeError when games.length implies round beyond max (6 players → max 5)', () => {
+      expect(() => pair(players(6), [[], [], [], [], []])).toThrow(RangeError);
     });
   });
 
   describe('interface compatibility', () => {
-    it('accepts a games array and ignores it', () => {
+    it('accepts a games array and ignores contents', () => {
       const p = players(4);
-      const games = [
-        { blackId: 'P4', result: 1 as const, round: 1, whiteId: 'P1' },
+      const games: { blackId: string; result: 1; whiteId: string }[][] = [
+        [{ blackId: 'P4', result: 1, whiteId: 'P1' }],
       ];
-      expect(() => roundRobin(p, games, 2)).not.toThrow();
+      expect(() => pair(p, games)).not.toThrow();
     });
-  });
-});
-
-describe('schedule()', () => {
-  it('returns 3 rounds for 4 players', () => {
-    expect(schedule(players(4))).toHaveLength(3);
-  });
-
-  it('returns 5 rounds for 5 players (padded to 6)', () => {
-    expect(schedule(players(5))).toHaveLength(5);
-  });
-
-  it('throws RangeError for fewer than 3 players', () => {
-    expect(() => schedule(players(2))).toThrow(RangeError);
-  });
-
-  it('throws RangeError for more than 16 players', () => {
-    expect(() => schedule(players(17))).toThrow(RangeError);
   });
 });
 

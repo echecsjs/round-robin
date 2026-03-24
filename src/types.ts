@@ -7,7 +7,6 @@ interface Bye {
 interface Game {
   blackId: string;
   result: Result;
-  round: number;
   whiteId: string;
 }
 

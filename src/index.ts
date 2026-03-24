@@ -7,4 +7,4 @@ export type {
   Result,
 } from './types.js';
 
-export { roundRobin, schedule } from './round-robin.js';
+export { pair } from './round-robin.js';

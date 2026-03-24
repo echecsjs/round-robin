@@ -30,11 +30,8 @@ function validate(players: Player[], round?: number): void {
   }
 }
 
-function roundRobin(
-  players: Player[],
-  _games: Game[],
-  round: number,
-): PairingResult {
+function pair(players: Player[], _games: Game[][]): PairingResult {
+  const round = _games.length + 1;
   validate(players, round);
 
   const size = effectiveSize(players.length);
@@ -74,13 +71,4 @@ function roundRobin(
   return { byes, pairings };
 }
 
-function schedule(players: Player[]): PairingResult[] {
-  validate(players);
-
-  const rounds = totalRounds(players.length);
-  return Array.from({ length: rounds }, (_, index) =>
-    roundRobin(players, [], index + 1),
-  );
-}
-
-export { roundRobin, schedule };
+export { pair };

@@ -7,8 +7,8 @@
 
 **Round Robin** is a TypeScript library for round-robin (all-play-all) chess
 tournament pairings, following the official
-[FIDE Berger tables](https://handbook.fide.com/chapter/C05Annex1) (Handbook C.05,
-Annex 1). Supports 3 to 16 players. Zero runtime dependencies.
+[FIDE Berger tables](https://handbook.fide.com/chapter/C05Annex1) (Handbook
+C.05, Annex 1). Supports 3 to 16 players. Zero runtime dependencies.
 
 Pairings are generated from hardcoded FIDE tables — no algorithmic generation.
 This guarantees bit-exact compliance with the published FIDE specification.
@@ -127,11 +127,7 @@ highest-numbered seed is the bye seat — so the player paired against that seat
 gets the bye.
 
 ```typescript
-const players: Player[] = [
-  { id: 'alice' },
-  { id: 'bob' },
-  { id: 'carol' },
-];
+const players: Player[] = [{ id: 'alice' }, { id: 'bob' }, { id: 'carol' }];
 
 const round1 = roundRobin(players, [], 1);
 console.log(round1.byes);
@@ -154,8 +150,8 @@ type PairingSystem = (
 ```
 
 This enables a future `@echecs/tournament` package to consume any pairing system
-through a single interface. The `games` parameter is accepted but ignored — round-robin
-pairings are fully determined by seeding order and round number.
+through a single interface. The `games` parameter is accepted but ignored —
+round-robin pairings are fully determined by seeding order and round number.
 
 ```typescript
 import { dutch } from '@echecs/swiss';

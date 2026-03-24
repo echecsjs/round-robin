@@ -70,8 +70,8 @@ pnpm lint && pnpm test && pnpm build
 
 - **ESM-only** — the package ships only ESM. Do not add a CJS build.
 - No runtime dependencies — keep it that way.
-- The Berger tables are stored in `src/berger.ts` as a static lookup, transcribed
-  directly from FIDE Handbook C.05 Annex 1.
+- The Berger tables are stored in `src/berger.ts` as a static lookup,
+  transcribed directly from FIDE Handbook C.05 Annex 1.
 - Supports 3-16 players. This is a hard constraint matching the FIDE spec.
 - Odd player counts are padded to the next even number; the highest seat becomes
   the bye seat.
