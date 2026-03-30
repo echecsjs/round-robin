@@ -1,6 +1,7 @@
 export type {
   Bye,
   Game,
+  GameKind,
   Pairing,
   PairingResult,
   Player,
