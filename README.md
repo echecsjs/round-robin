@@ -163,10 +163,19 @@ interface Player {
 
 interface Game {
   black: string;
+  kind?: GameKind;
   result: Result;
   white: string;
   // No `round` field — round is encoded by position in Game[][]
 }
+
+type GameKind =
+  | 'forfeit-loss'
+  | 'forfeit-win'
+  | 'full-bye'
+  | 'half-bye'
+  | 'pairing-bye'
+  | 'zero-bye';
 
 type Result = 0 | 0.5 | 1;
 ```

@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.0.1 — 2026-04-09
+
+### Fixed
+
+- Documented `GameKind` type export and `Game.kind` field in README.
+
 ## 2.0.0 — 2026-03-24
 
 ### Changed
