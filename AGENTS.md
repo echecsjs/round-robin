@@ -8,7 +8,7 @@ pairings using FIDE Berger tables (C.05 Annex 1).
 See the root `AGENTS.md` for workspace-wide conventions (package manager,
 
 **Backlog:** tracked in
-[GitHub Issues](https://github.com/mormubis/round-robin/issues). TypeScript
+[GitHub Issues](https://github.com/echecsjs/round-robin/issues). TypeScript
 settings, formatting, naming, testing, ESLint rules).
 
 ---
