@@ -56,6 +56,9 @@
   "license": "MIT",
   "name": "@echecs/round-robin",
   "packageManager": "pnpm@10.33.0",
+  "peerDependencies": {
+    "@echecs/tournament": "^2.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/echecsjs/round-robin.git"
