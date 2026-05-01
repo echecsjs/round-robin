@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.0.3] - 2026-05-01
+
+### Changed
+
+- Types are now imported from `@echecs/tournament` instead of locally defined.
+- `@echecs/tournament` is declared as a peer dependency to ensure type identity
+  with the consumer's installed copy.
+
 ## [3.0.2] - 2026-04-17
 
 ### Fixed
