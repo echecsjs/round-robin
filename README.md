@@ -3,6 +3,7 @@
 [![npm](https://img.shields.io/npm/v/@echecs/round-robin)](https://www.npmjs.com/package/@echecs/round-robin)
 [![Coverage](https://codecov.io/gh/echecsjs/round-robin/branch/main/graph/badge.svg)](https://codecov.io/gh/echecsjs/round-robin)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Spec](https://img.shields.io/badge/Spec-FIDE-green.svg)](SPEC.md)
 
 **Round Robin** is a TypeScript library for round-robin (all-play-all) chess
 tournament pairings, following the official
