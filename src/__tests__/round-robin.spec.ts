@@ -2,21 +2,25 @@ import { describe, expect, it } from 'vitest';
 
 import { pair } from '../index.js';
 
-import type { Game, Player } from '../index.js';
+import type { CompletedRound, Player } from '../index.js';
 
 function players(n: number): Player[] {
-  return Array.from({ length: n }, (_, index) => ({ id: `P${index + 1}` }));
+  return Array.from({ length: n }, (_, index) => ({
+    id: `P${index + 1}`,
+    points: 0,
+    rank: index + 1,
+  }));
 }
 
 function schedule(p: Player[]) {
   const size = p.length % 2 === 0 ? p.length : p.length + 1;
   const rounds = size - 1;
   const result = [];
-  const games: Game[][] = [];
+  const completedRounds: CompletedRound[] = [];
   for (let r = 0; r < rounds; r++) {
-    const roundResult = pair(p, games);
+    const roundResult = pair(p, completedRounds);
     result.push(roundResult);
-    games.push([]);
+    completedRounds.push({ byes: [], games: [] });
   }
   return result;
 }
@@ -30,8 +34,8 @@ function checkCompleteness(n: number): void {
     encounters.set(player.id, new Set());
   }
 
-  for (const { pairings } of rounds) {
-    for (const { black, white } of pairings) {
+  for (const { games } of rounds) {
+    for (const { black, white } of games) {
       encounters.get(white)?.add(black);
       encounters.get(black)?.add(white);
     }
@@ -52,10 +56,10 @@ function checkCoverage(n: number): void {
   const rounds = schedule(p);
   const playerIds = new Set(p.map((pl) => pl.id));
 
-  for (const { byes, pairings } of rounds) {
+  for (const { byes, games } of rounds) {
     const seen = new Set<string>();
 
-    for (const { black, white } of pairings) {
+    for (const { black, white } of games) {
       expect(seen.has(white)).toBe(false);
       expect(seen.has(black)).toBe(false);
       seen.add(white);
@@ -78,7 +82,7 @@ describe('pair()', () => {
     it('round 1: 1-4, 2-3', () => {
       expect(pair(p, [])).toEqual({
         byes: [],
-        pairings: [
+        games: [
           { white: 'P1', black: 'P4' },
           { white: 'P2', black: 'P3' },
         ],
@@ -86,9 +90,9 @@ describe('pair()', () => {
     });
 
     it('round 2: 4-3, 1-2', () => {
-      expect(pair(p, [[]])).toEqual({
+      expect(pair(p, [{ byes: [], games: [] }])).toEqual({
         byes: [],
-        pairings: [
+        games: [
           { white: 'P4', black: 'P3' },
           { white: 'P1', black: 'P2' },
         ],
@@ -96,9 +100,14 @@ describe('pair()', () => {
     });
 
     it('round 3: 2-4, 3-1', () => {
-      expect(pair(p, [[], []])).toEqual({
+      expect(
+        pair(p, [
+          { byes: [], games: [] },
+          { byes: [], games: [] },
+        ]),
+      ).toEqual({
         byes: [],
-        pairings: [
+        games: [
           { white: 'P2', black: 'P4' },
           { white: 'P3', black: 'P1' },
         ],
@@ -112,7 +121,7 @@ describe('pair()', () => {
     it('round 1: 1-8, 2-7, 3-6, 4-5', () => {
       expect(pair(p, [])).toEqual({
         byes: [],
-        pairings: [
+        games: [
           { white: 'P1', black: 'P8' },
           { white: 'P2', black: 'P7' },
           { white: 'P3', black: 'P6' },
@@ -122,9 +131,18 @@ describe('pair()', () => {
     });
 
     it('round 7: 4-8, 5-3, 6-2, 7-1', () => {
-      expect(pair(p, [[], [], [], [], [], []])).toEqual({
+      expect(
+        pair(p, [
+          { byes: [], games: [] },
+          { byes: [], games: [] },
+          { byes: [], games: [] },
+          { byes: [], games: [] },
+          { byes: [], games: [] },
+          { byes: [], games: [] },
+        ]),
+      ).toEqual({
         byes: [],
-        pairings: [
+        games: [
           { white: 'P4', black: 'P8' },
           { white: 'P5', black: 'P3' },
           { white: 'P6', black: 'P2' },
@@ -139,18 +157,21 @@ describe('pair()', () => {
 
     it('produces one bye per round', () => {
       for (let r = 0; r < 3; r++) {
-        const games: Game[][] = Array.from({ length: r }, () => []);
-        const result = pair(p, games);
+        const completedRounds: CompletedRound[] = Array.from(
+          { length: r },
+          () => ({ byes: [], games: [] }),
+        );
+        const result = pair(p, completedRounds);
         expect(result.byes).toHaveLength(1);
-        expect(result.pairings).toHaveLength(1);
+        expect(result.games).toHaveLength(1);
       }
     });
 
     it('P1 gets bye in round 1 (seat 4 is bye seat)', () => {
       const result = pair(p, []);
       // Round 1 FIDE: 1-4, 2-3 → seat 4 is bye → P1 gets bye
-      expect(result.byes).toEqual([{ player: 'P1' }]);
-      expect(result.pairings).toEqual([{ white: 'P2', black: 'P3' }]);
+      expect(result.byes).toEqual([{ kind: 'pairing', player: 'P1' }]);
+      expect(result.games).toEqual([{ white: 'P2', black: 'P3' }]);
     });
   });
 
@@ -165,21 +186,38 @@ describe('pair()', () => {
 
     it('throws RangeError when games.length implies round 0 is invalid', () => {
       // 4 players → max 3 rounds; passing 3 prior rounds means round 4, which is invalid
-      expect(() => pair(players(4), [[], [], []])).toThrow(RangeError);
+      expect(() =>
+        pair(players(4), [
+          { byes: [], games: [] },
+          { byes: [], games: [] },
+          { byes: [], games: [] },
+        ]),
+      ).toThrow(RangeError);
     });
 
     it('throws RangeError when games.length implies round beyond max (6 players → max 5)', () => {
-      expect(() => pair(players(6), [[], [], [], [], []])).toThrow(RangeError);
+      expect(() =>
+        pair(players(6), [
+          { byes: [], games: [] },
+          { byes: [], games: [] },
+          { byes: [], games: [] },
+          { byes: [], games: [] },
+          { byes: [], games: [] },
+        ]),
+      ).toThrow(RangeError);
     });
   });
 
   describe('interface compatibility', () => {
-    it('accepts a games array and ignores contents', () => {
+    it('accepts a completed rounds array and ignores contents', () => {
       const p = players(4);
-      const games: { black: string; result: 1; white: string }[][] = [
-        [{ black: 'P4', result: 1, white: 'P1' }],
+      const completedRounds: CompletedRound[] = [
+        {
+          byes: [],
+          games: [{ black: 'P4', result: 'white', white: 'P1' }],
+        },
       ];
-      expect(() => pair(p, games)).not.toThrow();
+      expect(() => pair(p, completedRounds)).not.toThrow();
     });
   });
 });

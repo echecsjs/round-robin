@@ -5,7 +5,7 @@
   },
   "description": "Round-robin chess tournament pairings following FIDE Berger tables (C.05 Annex 1). Supports 3-16 players with correct color assignment and bye handling. Zero dependencies.",
   "devDependencies": {
-    "@echecs/tournament": "^2.1.2",
+    "@echecs/tournament": "^3.1.0",
     "@eslint/js": "^10.0.1",
     "@typescript-eslint/parser": "^8.57.0",
     "@vitest/coverage-v8": "^4.1.0",
@@ -57,7 +57,7 @@
   "name": "@echecs/round-robin",
   "packageManager": "pnpm@10.33.0",
   "peerDependencies": {
-    "@echecs/tournament": "^2.0.0"
+    "@echecs/tournament": "^3.0.0"
   },
   "repository": {
     "type": "git",
@@ -82,5 +82,5 @@
     "test:watch": "pnpm run test --watch"
   },
   "type": "module",
-  "version": "3.0.3"
+  "version": "4.0.0"
 }

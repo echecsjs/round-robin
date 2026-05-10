@@ -1,6 +1,6 @@
 import { BERGER_TABLES } from './berger.js';
 
-import type { Game, PairingResult, Player } from './types.js';
+import type { CompletedRound, Pairings, Player } from './types.js';
 
 const MAX_PLAYERS = 16;
 const MIN_PLAYERS = 3;
@@ -30,8 +30,8 @@ function validate(players: Player[], round?: number): void {
   }
 }
 
-function pair(players: Player[], _games: Game[][]): PairingResult {
-  const round = _games.length + 1;
+function pair(players: Player[], _rounds: CompletedRound[]): Pairings {
+  const round = _rounds.length + 1;
   validate(players, round);
 
   const size = effectiveSize(players.length);
@@ -46,21 +46,21 @@ function pair(players: Player[], _games: Game[][]): PairingResult {
     );
   }
 
-  const pairings: PairingResult['pairings'] = [];
-  const byes: PairingResult['byes'] = [];
+  const games: Pairings['games'] = [];
+  const byes: Pairings['byes'] = [];
 
   for (const [whiteIndex, blackIndex] of roundPairings) {
     if (isOdd && (whiteIndex === byeIndex || blackIndex === byeIndex)) {
       const playerIndex = whiteIndex === byeIndex ? blackIndex : whiteIndex;
       const player = players[playerIndex];
       if (player !== undefined) {
-        byes.push({ player: player.id });
+        byes.push({ kind: 'pairing', player: player.id });
       }
     } else {
       const white = players[whiteIndex];
       const black = players[blackIndex];
       if (white !== undefined && black !== undefined) {
-        pairings.push({
+        games.push({
           black: black.id,
           white: white.id,
         });
@@ -68,7 +68,7 @@ function pair(players: Player[], _games: Game[][]): PairingResult {
     }
   }
 
-  return { byes, pairings };
+  return { byes, games };
 }
 
 export { pair };
