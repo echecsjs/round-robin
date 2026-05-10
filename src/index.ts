@@ -1,11 +1,10 @@
 export type {
   Bye,
+  CompletedRound,
   Game,
-  GameKind,
   Pairing,
-  PairingResult,
+  Pairings,
   Player,
-  Result,
 } from './types.js';
 
 export { pair } from './round-robin.js';

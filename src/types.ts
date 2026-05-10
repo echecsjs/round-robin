@@ -1,9 +1,8 @@
 export type {
   Bye,
+  CompletedRound,
   Game,
-  GameKind,
   Pairing,
-  PairingResult,
+  Pairings,
   Player,
-  Result,
 } from '@echecs/tournament';
