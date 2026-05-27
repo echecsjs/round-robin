@@ -1,6 +1,11 @@
 import { BERGER_TABLES } from './berger.js';
 
-import type { CompletedRound, Pairings, Player } from './types.js';
+import type {
+  CompletedRound,
+  PairingOptions,
+  Pairings,
+  Player,
+} from './types.js';
 
 const MAX_PLAYERS = 16;
 const MIN_PLAYERS = 3;
@@ -30,7 +35,11 @@ function validate(players: Player[], round?: number): void {
   }
 }
 
-function pair(players: Player[], _rounds: CompletedRound[]): Pairings {
+function pair(
+  players: Player[],
+  _rounds: CompletedRound[],
+  _options?: PairingOptions,
+): Pairings {
   const round = _rounds.length + 1;
   validate(players, round);
 

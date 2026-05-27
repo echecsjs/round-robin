@@ -3,6 +3,7 @@ export type {
   CompletedRound,
   Game,
   Pairing,
+  PairingOptions,
   Pairings,
   Player,
 } from '@echecs/tournament';

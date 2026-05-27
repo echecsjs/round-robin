@@ -106,7 +106,11 @@ pnpm lint && pnpm test && pnpm build
 The `pair` function conforms to the same signature as Swiss pairing functions:
 
 ```typescript
-type PairingSystem = (players: Player[], games: Game[][]) => PairingResult;
+type PairingSystem = (
+  players: Player[],
+  rounds: CompletedRound[],
+  options?: PairingOptions,
+) => Pairings;
 ```
 
 This enables `@echecs/tournament` to consume any pairing system through a single
