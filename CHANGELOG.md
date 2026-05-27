@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.1.0] - 2026-05-27
+
+### Added
+
+- `pair()` now accepts an optional `PairingOptions` third parameter for
+  `PairingSystem` compatibility.
+- Re-exports `PairingOptions` from `@echecs/tournament`.
+
 ## [3.0.3] - 2026-05-01
 
 ### Changed
