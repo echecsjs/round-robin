@@ -35,6 +35,14 @@ function validate(players: Player[], round?: number): void {
   }
 }
 
+/**
+ * Generate round-robin pairings from FIDE Berger tables.
+ *
+ * The `rounds` and `options` parameters are accepted for interface
+ * compatibility with `PairingSystem` but are not used — round-robin
+ * pairings are fully determined by seeding order and round index.
+ * Trace callbacks passed via `options.trace` will never be called.
+ */
 function pair(
   players: Player[],
   _rounds: CompletedRound[],
