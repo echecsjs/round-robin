@@ -54,14 +54,15 @@ function pair(
   const size = effectiveSize(players.length);
   const table = BERGER_TABLES[size];
   const roundPairings = table?.[round - 1];
-  const isOdd = players.length % 2 !== 0;
-  const byeIndex = size - 1;
 
   if (roundPairings === undefined) {
     throw new RangeError(
       `No Berger table entry for size ${size}, round ${round}`,
     );
   }
+
+  const isOdd = players.length % 2 !== 0;
+  const byeIndex = size - 1;
 
   const games: Pairings['games'] = [];
   const byes: Pairings['byes'] = [];
