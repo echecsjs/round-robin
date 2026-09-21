@@ -25,13 +25,13 @@ function validate(players: Player[], round?: number): void {
     );
   }
 
-  if (round !== undefined) {
-    const rounds = totalRounds(players.length);
-    if (round < 1 || round > rounds) {
-      throw new RangeError(
-        `Round must be between 1 and ${rounds}, got ${round}`,
-      );
-    }
+  if (round === undefined) {
+    return;
+  }
+
+  const rounds = totalRounds(players.length);
+  if (round < 1 || round > rounds) {
+    throw new RangeError(`Round must be between 1 and ${rounds}, got ${round}`);
   }
 }
 
